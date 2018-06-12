@@ -9,9 +9,9 @@ var repoName = process.argv[3]
 
 // Requesting files and packages
 var request = require("request");
-var token = require("./secrets.js");
 var fs = require('fs');
-
+require('dotenv').config();
+// var token = require("./secrets.js");
 
 // A welcome message
 console.log("Welcome to the GitHub Avatar Downloader!");
@@ -27,10 +27,12 @@ function getRepoContributors(repoOwner, repoName, cb){
   */
 
   // Error handling making sure there are inputs
-  if(!repoOwner || !repoName){
-    console.log("No argvs passed into the program. EXITTING.");
+
+  if(process.argv.length != 4){
+    console.log("Incorrect argvs passed into the program. EXITTING.");
     return;
   }
+  console.log(process.env.GITHUB_TOKEN)
 
   var options = {
     url: "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
@@ -47,6 +49,8 @@ function getRepoContributors(repoOwner, repoName, cb){
     if(err){
       throw err;
     }
+    console.log(body);
+    //console.log(JSON.parse(body).length);
     for(var i = 0; i < JSON.parse(body).length; i++){
       contributors[JSON.parse(body)[i].login] = JSON.parse(body)[i];
     }
@@ -64,7 +68,13 @@ function downloadImageByURL(url, filePath){
   Leo Ruan
   2018/June/11
   */
-
+  // if(!fs.existsSync(filePath)){
+  //   console.log("The file path trying to acess is incorrect. Please retry.");
+  //   return;
+  // }
+  // fs.exist(filePath, function(err){
+  //   throw err;
+  // });
   request.get(url)
   .on('error', function(err){
     throw err;
